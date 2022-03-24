@@ -1,29 +1,37 @@
 const Flight = require('../models/flight')
-const flight = require('../models/flight')
+
 
 module.exports ={
+    index,
+    show,
     new: newFlight,
-    create,
-    index
+    create
 }
 
+function index(req,res){
+    Flight.find({}, function(err, flights){
+        res.render('flights/index', {title: 'All Flights', flights})
+    })
+}
+
+function show(req, res) {
+    Flight.findById(req.params.id, function(err, flight) {
+            res.render('flights/show', {title: 'Destination', flight});
+      });
+  }
+  
 function newFlight(req, res) {
-    res.render('flights/new')
+    res.render('flights/new', {title: 'Add Flight'})
 }
 
 function create(req, res) {
     const flight = new Flight(req.body);
     flight.save(function(err) {
         // one way to handle errors
-        if (err) return res.render('flights/new');
+        if (err) return res.redirect('/flights/new');
         console.log(flight);
         // for now, redirect right back to new.ejs
-        res.redirect('/flights');
+        res.redirect(`/flights/${ flight._id }`)
     });
 }
 
-function index(req,res){
-    flight.find({}, function(err, flights){
-        res.render('flights/index', {flights})
-    })
-}
